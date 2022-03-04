@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{26863291-F27F-4999-A48A-04BFDB53E724}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamQuest.Client", "src\StreamQuest.Client\StreamQuest.Client.csproj", "{CD6BE08A-0B2A-4B26-9A5F-29307CAF7701}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CD6BE08A-0B2A-4B26-9A5F-29307CAF7701}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD6BE08A-0B2A-4B26-9A5F-29307CAF7701}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD6BE08A-0B2A-4B26-9A5F-29307CAF7701}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD6BE08A-0B2A-4B26-9A5F-29307CAF7701}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CD6BE08A-0B2A-4B26-9A5F-29307CAF7701} = {26863291-F27F-4999-A48A-04BFDB53E724}
+	EndGlobalSection
+EndGlobal
