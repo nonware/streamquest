@@ -1,2 +1,13 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using Microsoft.Extensions.Hosting;
+using Orleans;
+using Orleans.Hosting;
+
+await Host.CreateDefaultBuilder(args)
+    .UseOrleans(sb =>
+    {
+        sb
+        .UseLocalhostClustering()
+        .AddMemoryGrainStorage("")
+        .AddSimpleMessageStreamProvider("app", options => { options.FireAndForgetDelivery = true; });
+    })
+    .RunConsoleAsync();
