@@ -7,7 +7,7 @@ await Host.CreateDefaultBuilder(args)
     {
         sb
         .UseLocalhostClustering()
-        .AddMemoryGrainStorage("")
+        .AddMemoryGrainStorage("PubSubStore")
         .AddSimpleMessageStreamProvider("app", options => { options.FireAndForgetDelivery = true; });
     })
     .RunConsoleAsync();
