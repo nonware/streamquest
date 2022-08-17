@@ -9,9 +9,9 @@ namespace StreamQuest.Silo
 {
     public class RoomGrain : Grain, IRoomGrain
     {
-        private readonly List<Character> _characters = new();
+        private readonly List<ActionMessage> _messages = new(100);
+        private readonly List<ICharacterGrain> _characters = new();
         private IAsyncStream<ActionMessage> _stream = null!;
-
         public override Task OnActivateAsync()
         {
             var streamProvider = GetStreamProvider("app");
@@ -21,7 +21,7 @@ namespace StreamQuest.Silo
             return base.OnActivateAsync();
         }
 
-        public async Task<Guid> Enter(Character character, Direction direction)
+        public async Task<Guid> Enter(ICharacterGrain character, Direction direction)
         {
             _characters.Add(character);
 
@@ -33,7 +33,7 @@ namespace StreamQuest.Silo
             return _stream.Guid;
         }
 
-        public async Task<Guid> Exit(Character character, Direction direction)
+        public async Task<Guid> Exit(ICharacterGrain character, Direction direction)
         {
             _characters.Remove(character);
 
@@ -43,6 +43,15 @@ namespace StreamQuest.Silo
                     $"{character.Name} leaves to the {direction}..."));
 
             return _stream.Guid;
+        }
+
+        public async Task<bool> Message(ActionMessage msg)
+        {
+            _messages.Add(msg);
+
+            await _stream.OnNextAsync(msg);
+
+            return true;
         }
     }
 }

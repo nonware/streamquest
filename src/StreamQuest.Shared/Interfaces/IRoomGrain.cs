@@ -5,7 +5,8 @@ namespace StreamQuest.Shared.Interfaces
 {
     public interface IRoomGrain : IGrainWithStringKey
     {
-        Task<Guid> Enter(Character character, Direction from);
-        Task<Guid> Exit(Character character, Direction to);
+        Task<Guid> Enter(ICharacterGrain character, Direction direction);
+        Task<Guid> Exit(ICharacterGrain character, Direction direction);
+        Task<bool> Message(ActionMessage msg);
     }
 }
