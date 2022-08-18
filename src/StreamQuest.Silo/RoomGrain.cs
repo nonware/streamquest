@@ -10,11 +10,11 @@ namespace StreamQuest.Silo
     public class RoomGrain : Grain, IRoomGrain
     {
         private readonly List<ActionMessage> _messages = new(100);
-        private readonly List<ICharacterGrain> _characters = new();
+        private readonly List<ICharacterGrain> _characters = new(10);
         private IAsyncStream<ActionMessage> _stream = null!;
         public override Task OnActivateAsync()
         {
-            var streamProvider = GetStreamProvider("app");
+            var streamProvider = GetStreamProvider("room");
 
             _stream = streamProvider.GetStream<ActionMessage>(Guid.NewGuid(), "default");
 
@@ -52,6 +52,17 @@ namespace StreamQuest.Silo
             await _stream.OnNextAsync(msg);
 
             return true;
+        }
+
+        public Task<ActionMessage[]> ReadHistory(int numberOfMessages)
+        {
+            var response = _messages
+                .OrderByDescending(x => x.Created)
+                .Take(numberOfMessages)
+                .OrderBy(x => x.Created)
+                .ToArray();
+
+            return Task.FromResult(response);
         }
     }
 }

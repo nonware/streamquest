@@ -10,7 +10,7 @@ var client = new ClientBuilder()
     .UseLocalhostClustering()
     .ConfigureApplicationParts(
         parts => parts.AddApplicationPart(typeof(ICharacterGrain).Assembly).WithReferences())
-    .AddSimpleMessageStreamProvider("chat")
+    .AddSimpleMessageStreamProvider("room")
     .Build();
 
 
@@ -68,16 +68,49 @@ static async Task ProcessLoopAsync(ClientContext context)
         var firstTwoCharacters = input[..2];
         if (firstTwoCharacters switch
         {
-            "/n" => EnterRoom(context, input.Replace("/n", "").Trim()),
+            "/n" => EnterRoom(context, input.Replace("/n", "New").Trim()),
             _ => null
         } is Task<ClientContext> cxtTask)
         {
             context = await cxtTask;
             continue;
         }
+        if (firstTwoCharacters switch
+        {
+            "/h" => ShowCurrentChannelHistory(context),
+            _ => null
+        } is Task task)
+        {
+            await task;
+            continue;
+        }
 
         await SendMessage(context, input);
     } while (input is not "/exit");
+}
+
+static async Task ShowCurrentChannelHistory(ClientContext context)
+{
+    var room = context.Client.GetGrain<IRoomGrain>(context.CurrentRoom);
+    var history = await room.ReadHistory(1_000);
+
+    AnsiConsole.Write(new Rule($"History for '{context.CurrentRoom}'")
+    {
+        Alignment = Justify.Center,
+        Style = Style.Parse("darkgreen")
+    });
+
+    foreach (var chatMsg in history)
+    {
+        AnsiConsole.MarkupLine("[[[dim]{0}[/]]] [bold yellow]{1}:[/] {2}",
+            chatMsg.Created.LocalDateTime, chatMsg.Issuer, chatMsg.Text);
+    }
+
+    AnsiConsole.Write(new Rule()
+    {
+        Alignment = Justify.Center,
+        Style = Style.Parse("darkgreen")
+    });
 }
 
 static async Task<ClientContext> EnterRoom(ClientContext context, string roomName)
@@ -89,12 +122,14 @@ static async Task<ClientContext> EnterRoom(ClientContext context, string roomNam
         var streamId = await room.Enter(context.Character!, Direction.North);
         var stream =
             context.Client
-                .GetStreamProvider("chat")
+                .GetStreamProvider("room")
                 .GetStream<ActionMessage>(streamId, "default");
 
         //subscribe to the stream to receive further messages sent to the room
         await stream.SubscribeAsync(new StreamObserver(roomName));
     });
+
+
     return context;
 }
 
@@ -103,5 +138,6 @@ static async Task SendMessage(
     string messageText)
 {
     var room = context.Client.GetGrain<IRoomGrain>(context.CurrentRoom);
-    await room.Message(new ActionMessage("Larry", messageText));
+    var name = await context.Character.Name();
+    await room.Message(new ActionMessage(name, messageText));
 }

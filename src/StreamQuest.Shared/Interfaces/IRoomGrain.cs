@@ -8,5 +8,6 @@ namespace StreamQuest.Shared.Interfaces
         Task<Guid> Enter(ICharacterGrain character, Direction direction);
         Task<Guid> Exit(ICharacterGrain character, Direction direction);
         Task<bool> Message(ActionMessage msg);
+        Task<ActionMessage[]> ReadHistory(int numberOfMessages);
     }
 }
